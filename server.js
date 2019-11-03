@@ -21,6 +21,20 @@ const wss = new socketServer({ server: mainSocketServer, port: SOCKET_PORT}, ()=
 
 const dbconfig = require('./dbconfig');
 
+//
+const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session');
+
+const cookieKeys = [process.env.COOKIE_KEYS];
+// Middle-ware
+app.use(cookieParser());
+app.use(cookieSession({
+  name: process.env.COOKIE_SESSION,
+  keys: cookieKeys,
+  maxAge: 600000 // 5 minutes
+}));
+
+//
 
 const mongoClient = require('mongodb').mongoClient;
 app.use(bodyParser.urlencoded({ extended: true }));

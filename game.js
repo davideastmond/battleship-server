@@ -1,3 +1,4 @@
+const uuid = require('uuid/v4');
 class Game {
 
   // Each Game class has two gameboards- player one's and player two's
@@ -19,7 +20,7 @@ class Game {
     this.P2Target = getGameBoard();
     
     // Holds reference to the game id likely auto-generated using UUIIDv4 or something
-    this.Game_ID = 0; 
+    this.Game_ID = uuid();
   }
 
   // This function assigns players
@@ -43,6 +44,18 @@ function getGameBoard() {
   return gbArray;
 }
 
+function createTestGames() {
+  const finalArray = [];
+  for (let i = 0; i < 10; i++ ) {
+    const testGame = new Game();
+    testGame.assignPlayers(uuid(), uuid());
+    finalArray.push(testGame);
+  }
+
+  return finalArray;
+}
+
 module.exports = {
-  Game: Game
+  Game: Game,
+  CreateTestGames: createTestGames
 };
