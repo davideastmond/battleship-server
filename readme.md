@@ -22,3 +22,5 @@ The server that handles games and back end logic, using node, express and websoc
 
 - dotenv
 - MongoDB Compass Community (development database)
+
+### Future Features

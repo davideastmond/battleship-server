@@ -14,7 +14,7 @@ module.exports = {
         console.log(err);
         return null;
       } else {
-        console.log("Connected to database: ", databaseRef);
+        console.log("Connected to database '", databaseRef,"'");
         return client.db(databaseRef);
       }
     });

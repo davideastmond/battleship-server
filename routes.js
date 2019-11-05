@@ -4,6 +4,29 @@ const GameModule = require('./game');
 const gameEnvironment = require('./env');
 const uuid = require('uuid/v4');
 
+const dbconfig = require('./dbconfig');
+
+// Connects to the MongoDB
+const dbRef = dbconfig.getDB('battleship');
+
+// This loads random Test Games
+const testGames = GameModule.CreateTestGames();
+
+router.get('/games', (req, res) => {
+  const essentialTestGameInfo = gameEnvironment.gamesArray.map((eachGame) => {
+    return { id: eachGame.Game_ID, title: `${eachGame.P1}'s game`};
+  });
+  res.status(200).json({games: JSON.stringify(essentialTestGameInfo) });
+});
+
+router.post('/game/:id/join/', (req, res) => {
+  if (req.session.session_id) {
+    res.status(200).json({response: 'ok not implemented'});
+  } else {
+    res.status(400).json({response: 'invalid session'});
+  }
+});
+
 router.post('/game/new', (req, res) => {
   // Create's a new game
   // First starter's console log the req.body
@@ -18,33 +41,17 @@ router.post('/game/new', (req, res) => {
     console.log(gameEnvironment.gamesArray);
     // Assign to the game array
 
-		res.status(200).json({response: 'ok', email: registrationEmail});
-		
-		// Register
-		req.session.session_id = registrationEmail;
-    return;
+    // With this response, the client should attempt to connect to the wsocket
+    res.status(200).json({response: 'ok', email: registrationEmail, gameID: newGame.Game_ID });
+    
+    // Register
+    req.session.session_id = registrationEmail;
   } else {
     res.status(400).response({response: 'invalid email '});
   }
+  
+  //TODO: Persist a game state via MongoDB
 });
 
-/**
- * Route to handle user joining already created Battleship game
- */
-router.post('/game/:id/join/', (req, res) => {
-	if (req.session.session_id) {
-		res.status(200).json({response: 'ok not implemented'});
-	} else {
-		res.status(400).json({response: 'invalid session'});
-	}
-});
-
-router.get('/games', (req, res) => {
-	const testGames = GameModule.CreateTestGames();
-	const essentialTestGameInfo = testGames.map((eachGame) => {
-		return { id: eachGame.Game_ID, title: `${eachGame.P1}'s game`};
-	});
-  res.status(200).json({games: JSON.stringify(essentialTestGameInfo) });
-});
 
 module.exports = router;
