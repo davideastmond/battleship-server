@@ -5,10 +5,13 @@ const gameEnvironment = require('./env');
 const uuid = require('uuid/v4');
 
 const dbconfig = require('./dbconfig');
+let dbRef;
 
-// Connects to the MongoDB
-const dbRef = dbconfig.getDB('battleship');
-
+dbconfig.getDB('battleship')
+.then((res) => {
+ dbRef = res;
+ console.log("DBRef obtained");
+});
 // This loads random Test Games
 const testGames = GameModule.CreateTestGames();
 
@@ -19,8 +22,9 @@ router.get('/games', (req, res) => {
   res.status(200).json({games: JSON.stringify(essentialTestGameInfo) });
 });
 
-router.post('/game/:id/join/', (req, res) => {
+router.post('/game/:game_id/join/', (req, res) => {
   if (req.session.session_id) {
+    // Basically send a response and then make the client connect to a socket
     res.status(200).json({response: 'ok not implemented'});
   } else {
     res.status(400).json({response: 'invalid session'});
@@ -42,16 +46,18 @@ router.post('/game/new', (req, res) => {
     // Assign to the game array
 
     // With this response, the client should attempt to connect to the wsocket
-    res.status(200).json({response: 'ok', email: registrationEmail, gameID: newGame.Game_ID });
-    
     // Register
     req.session.session_id = registrationEmail;
+
+    dbRef.collection('games').insertOne(newGame)
+    .then((response) => {
+      console.log(response.result);
+      res.status(200).json({response: 'ok', email: registrationEmail, gameID: newGame.Game_ID });
+    });
   } else {
     res.status(400).response({response: 'invalid email '});
   }
   
   //TODO: Persist a game state via MongoDB
 });
-
-
 module.exports = router;

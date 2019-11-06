@@ -21,6 +21,7 @@ class Game {
     
     // Holds reference to the game id likely auto-generated using UUIIDv4 or something
     this.Game_ID = uuid();
+    this.owner = undefined;
   }
 
   // This function assigns players
@@ -33,9 +34,15 @@ class Game {
     // Starts a game, checks that there are two players
     // Perhaps uses a callback
   }
+
+  setOwner(game_owner) {
+    this.owner = game_owner;
+  }
 }
 
-
+/** Creates a 2D matrix of integers, representing a battleship game board
+ * @returns {Array.<number>} Returns a two-dimensional array of integers, 10 by 10
+ */
 function getGameBoard() {
   const gbArray = [];
   for (let i = 0; i <= 9; i++ ) {
@@ -44,9 +51,12 @@ function getGameBoard() {
   return gbArray;
 }
 
-function createTestGames() {
+/** Creates a specified amount of test games, returning an array of Game objects
+ * @param {number.<Game>} max number of test games to create
+ */
+function createTestGames(max = 10) {
   const finalArray = [];
-  for (let i = 0; i < 10; i++ ) {
+  for (let i = 0; i < max; i++ ) {
     const testGame = new Game();
     testGame.assignPlayers(uuid(), uuid());
     finalArray.push(testGame);
