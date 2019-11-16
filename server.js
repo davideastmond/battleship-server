@@ -19,6 +19,18 @@ const cookieKeys = [process.env.COOKIE_KEYS];
 
 const socketHandler = require('./socketMessages');
 
+const dbconfig = require('./dbconfig');
+let dbRef;
+
+dbconfig.getDB('battleship').then((res) => {
+  dbRef = res;
+  console.log("Connected to games database. Server.js");
+})
+.catch( function(error) {
+  console.log("Error connecting to database");
+  process.exit(-1);
+});
+
 // Middle-ware
 app.use(cookieParser());
 app.use(cookieSession({
@@ -44,10 +56,10 @@ const wss = new socketServer({ server: mainSocketServer, port: SOCKET_PORT}, ()=
 });
 
 wss.on('connection', (ws, req) => {
-  console.log("Connection established");
+  console.log("Web Socket Connection established");
   ws.on('message', (msg) => {
     const datamsg = translateMessage(msg);
-    socketHandler.processClientMessage(datamsg, ws, null);
+    socketHandler.processClientMessage(datamsg, ws, null, dbRef);
     // Send a response
     sendServerResponse({message: 'ok-response'}, ws);
   });
@@ -58,11 +70,9 @@ wss.on('connection', (ws, req) => {
 });
 
 function translateMessage(incommingMessage) {
-  const translatedMessage = JSON.parse(incommingMessage);
-  return translatedMessage;
+  return JSON.parse(incommingMessage);
 }
 
 function sendServerResponse(respMessage, socket) {
-  const translatedMessage = JSON.stringify(respMessage);
-  socket.send(translatedMessage);
+  socket.send(JSON.stringify(respMessage));
 }

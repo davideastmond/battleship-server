@@ -21,7 +21,13 @@ class Game {
     
     // Holds reference to the game id likely auto-generated using UUIIDv4 or something
     this.Game_ID = uuid();
-    this.owner = undefined;
+		this.owner = undefined;
+		
+		this.available = true;
+		this.finished = false;
+
+		this.date_created = Date.now();
+		this.date_game_end = null;
   }
 
   // This function assigns players
@@ -32,12 +38,25 @@ class Game {
 
   start(callback) {
     // Starts a game, checks that there are two players
-    // Perhaps uses a callback
+		// Perhaps uses a callback
+		
+		if (!this.p1 || !this.p2) {
+			callback({ message: 'invalid game player status '});
+			return;
+		}
   }
 
   setOwner(game_owner) {
     this.owner = game_owner;
-  }
+	}
+	
+	setStatus(status) {
+		if (typeof status === 'boolean') {
+			this.available = status; 
+		} else {
+			throw "Invalid game status. Please provide a boolean value.";
+		}
+	}
 }
 
 /** Creates a 2D matrix of integers, representing a battleship game board
