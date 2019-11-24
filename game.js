@@ -30,11 +30,15 @@ class Game {
 		this.date_game_end = null;
   }
 
-  // This function assigns players
+  // This is for testing
   assignPlayers(p1, p2) {
     this.P1 = p1;
     this.P2 = p2;
-  }
+	}
+	
+	assignOpponent(p2) {
+		this.P2 = p2;
+	}
 
   start(callback) {
     // Starts a game, checks that there are two players
@@ -47,7 +51,8 @@ class Game {
   }
 
   setOwner(game_owner) {
-    this.owner = game_owner;
+		this.owner = game_owner;
+		this.P1 = game_owner;
 	}
 	
 	setStatus(status) {

@@ -39,7 +39,7 @@ router.post('/game/:game_id/join/', (req, res) => {
     
   if (req.body.email && req.params.game_id) {
     console.log("Join Game: ", req.params.game_id, req.body.email);
-
+		
     // Join game. This will send a response with the game ID. This will then cause the client to form a websocket connection
     res.status(200).json({ response: req.params.game_id, email: req.body.email });
   } else {

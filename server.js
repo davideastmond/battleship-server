@@ -22,6 +22,8 @@ const socketHandler = require('./socketMessages');
 const dbconfig = require('./dbconfig');
 let dbRef;
 
+const clients = [];
+
 dbconfig.getDB('battleship').then((res) => {
   dbRef = res;
   console.log("Connected to games database. Server.js");
@@ -55,13 +57,13 @@ const wss = new socketServer({ server: mainSocketServer, port: SOCKET_PORT}, ()=
   console.log(`socket sever staring on port ${SOCKET_PORT}`);
 });
 
-wss.on('connection', (ws, req) => {
-  console.log("Web Socket Connection established");
+
+wss.on('connection', (ws, req, client) => {
+  console.log("Web Socket Connection established", wss.clients.size);
+
   ws.on('message', (msg) => {
     const datamsg = translateMessage(msg);
-    socketHandler.processClientMessage(datamsg, ws, null, dbRef);
-    // Send a response
-    sendServerResponse({message: 'ok-response'}, ws);
+    socketHandler.processClientMessage(datamsg, ws, wss, datamsg.message.gameID, dbRef, sendServerResponse);
   });
 
   ws.on('close', ()=> {
@@ -69,10 +71,27 @@ wss.on('connection', (ws, req) => {
   });
 });
 
+/**
+ * 
+ * @param {object} incommingMessage 
+ * @returns {object} Parsed response
+ */
 function translateMessage(incommingMessage) {
   return JSON.parse(incommingMessage);
 }
 
-function sendServerResponse(respMessage, socket) {
-  socket.send(JSON.stringify(respMessage));
+function sendServerResponse(respMessage, socket, socket_server, flags=false) {
+
+  if (flags) {
+    console.log("Flagged response");
+    
+  }
+
+  if (socket_server) {
+    socket_server.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify(respMessage));
+      }
+    });
+  }
 }
