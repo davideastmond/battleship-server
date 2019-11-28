@@ -37,7 +37,7 @@ module.exports = {
 			}
       
       responseCallback({ type: 'server-message', message:'game-start', data: game_data[0]}, socket, socket_server, true);
-      //sendServerResponse({ message: 'ok-response' }, ws);
+     
     }
   }
 };

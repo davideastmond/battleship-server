@@ -81,15 +81,10 @@ function translateMessage(incommingMessage) {
 }
 
 function sendServerResponse(respMessage, socket, socket_server, flags=false) {
-
-  if (flags) {
-    console.log("Flagged response");
-    
-  }
-
   if (socket_server) {
-    socket_server.clients.forEach((client) => {
-      if (client.readyState === WebSocket.OPEN) {
+    socket_server.clients.forEach((client, index) => {
+      if (client.readyState === 1) {
+        console.log(respMessage);
         client.send(JSON.stringify(respMessage));
       }
     });
